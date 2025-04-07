@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
-  "compile": "truffle compile",
-  "test": "truffle test",
-  "deploy:goerli": "truffle migrate --network goerli",
-  "deploy:bsc": "truffle migrate --network bscTestnet"
-},
+  "scripts": {
+    "compile": "truffle compile",
+    "test": "truffle test",
+    "deploy:goerli": "truffle migrate --network goerli",
+    "deploy:bsc": "truffle migrate --network bscTestnet"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "ethers": "^6.13.5",
-    "web3": "^4.16.0"
+    "express": "^5.1.0",
+    "web3": "^4.16.0",
+    "web3-providers-http": "^4.2.0"
   }
 }
