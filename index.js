@@ -18,7 +18,7 @@ web3.eth.accounts.wallet.add(account);
 web3.eth.defaultAccount = account.address;
 
 // Load contract ABI
-const contractPath = path.join(__dirname, 'contracts', 'HashTimeLock.json');
+const contractPath = path.join(__dirname, 'build', 'contracts', 'HashTimeLock.json');
 const abi = JSON.parse(fs.readFileSync(contractPath)).abi;
 
 // Instantiate contract
@@ -47,7 +47,11 @@ app.post('/api/swap/initiate', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+app.get('/',(req,res)=>{
+  res.send('Welcome to the Swap API!');
+})
+
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Swap API running at http://localhost:${PORT}`);
 });
