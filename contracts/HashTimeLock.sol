@@ -32,10 +32,11 @@ contract HashTimeLock {
      * @return swapId The unique identifier for this swap
      */
     function initiate(address _participant, bytes32 _hashlock, uint256 _timelock) external payable returns (bytes32) {
-        require(msg.value > 0, "Amount must be greater than 0");
-        require(_participant != address(0), "Invalid participant address");
-        require(_timelock > block.timestamp, "Timelock must be in the future");
-        
+        // Validate inputs
+        require(msg.value > 0, "Amount must be greater than 0, check the sent value");
+        require(_participant != address(0), "Invalid participant address, check the address");
+        require(_timelock > block.timestamp, "Timelock must be in the future, check the timestamp");
+
         // Generate a unique swap id
         bytes32 swapId = keccak256(abi.encodePacked(
             msg.sender,
@@ -46,7 +47,7 @@ contract HashTimeLock {
         ));
         
         // Ensure swap id doesn't already exist
-        require(swaps[swapId].amount == 0, "Swap already exists");
+        require(swaps[swapId].amount == 0, "Swap already exists with the same parameters");
         
         // Create the swap
         swaps[swapId] = Swap({
@@ -59,6 +60,7 @@ contract HashTimeLock {
             refunded: false
         });
         
+        // Emit event for swap initiation
         emit SwapInitiated(swapId, msg.sender, _participant, msg.value, _hashlock, _timelock);
         
         return swapId;
@@ -73,10 +75,10 @@ contract HashTimeLock {
         Swap storage swap = swaps[_swapId];
         
         // Verify swap exists and conditions are met
-        require(swap.amount > 0, "Swap does not exist");
+        require(swap.amount > 0, "Swap does not exist with the given ID");
         require(!swap.completed && !swap.refunded, "Swap already completed or refunded");
-        require(keccak256(abi.encodePacked(_secret)) == swap.hashlock, "Invalid secret");
-        require(block.timestamp < swap.timelock, "Swap expired");
+        require(keccak256(abi.encodePacked(_secret)) == swap.hashlock, "Invalid secret provided");
+        require(block.timestamp < swap.timelock, "Swap expired, timelock has passed");
         
         // Mark as completed
         swap.completed = true;
@@ -96,16 +98,16 @@ contract HashTimeLock {
         Swap storage swap = swaps[_swapId];
         
         // Verify swap exists and conditions are met
-        require(swap.amount > 0, "Swap does not exist");
+        require(swap.amount > 0, "Swap does not exist with the given ID");
         require(!swap.completed && !swap.refunded, "Swap already completed or refunded");
-        require(block.timestamp >= swap.timelock, "Timelock not yet expired");
+        require(block.timestamp >= swap.timelock, "Timelock has not yet expired");
         
         // Mark as refunded
         swap.refunded = true;
         
         // Return funds to the initiator
         (bool sent, ) = payable(swap.initiator).call{value: swap.amount}("");
-        require(sent, "Failed to refund to initiator");
+        require(sent, "Failed to refund funds to initiator");
         
         emit SwapRefunded(_swapId);
     }
