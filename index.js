@@ -4,6 +4,7 @@ const { HttpProvider } = require('web3-providers-http');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
+const routes = require('./Routes/index')
 
 const app = express();
 app.use(express.json());
@@ -23,6 +24,10 @@ const abi = JSON.parse(fs.readFileSync(contractPath)).abi;
 
 // Instantiate contract
 const contract = new web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
+
+
+
+app.use('/',routes);
 
 // Initiate Swap API
 app.post('/api/swap/initiate', async (req, res) => {
@@ -47,9 +52,7 @@ app.post('/api/swap/initiate', async (req, res) => {
   }
 });
 
-app.get('/',(req,res)=>{
-  res.send('Welcome to the Swap API!');
-})
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
