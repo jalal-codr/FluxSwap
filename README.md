@@ -9,3 +9,6 @@ truffle migrate --network development
 
 
 truffle test
+
+
+
